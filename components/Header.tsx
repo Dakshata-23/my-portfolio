@@ -23,14 +23,14 @@ const Header: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
-      <motion.nav 
+      <motion.nav
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
         className="glass rounded-2xl px-4 py-3 flex items-center gap-2 md:gap-4 pointer-events-auto shadow-lg shadow-black/5"
       >
         {navLinks.map((link) => (
-          <motion.a 
+          <motion.a
             key={link.name}
             href={link.href}
             onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleLinkClick(e, link.href)}
@@ -49,7 +49,7 @@ const Header: React.FC = () => {
             </span>
           </motion.a>
         ))}
-        
+
         {/* Divider */}
         <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
