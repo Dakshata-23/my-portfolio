@@ -36,9 +36,30 @@ export const PROFILE_DATA = {
 
 export const PROJECTS: Project[] = [
   {
+    slug: "yespoho-ecommerce",
+    title: "Yespoho E-Commerce Storefront",
+    duration: "120-150 Days",
+    description: "Developed UI and handled PHP (Laravel) backend logic. Fixed broken cron jobs, integrated I-Carry status updates, built a membership subscription module, and integrated AI-powered Virtual Try-On and Custom Saree Design features.",
+    tags: ["PHP", "Laravel", "E-commerce", "Generative AI", "Subscriptions"],
+    link: "https://dakshatashukla.in/",
+    caseStudy: {
+      problem: "The storefront UI was outdated, the backend faced failing automated tasks/delivery updates, and lacked advanced product visualization and membership models.",
+      solution: "Modernized the storefront UI, stabilized PHP backend logic, and introduced innovative AI features ('Try Me' & 'Create My Design') alongside a robust subscription system.",
+      features: [
+        "Storefront UI Development",
+        "AI 'Try Me' (Virtual Try-On for Sarees)",
+        "AI 'Create My Design' (Custom Saree Generator)",
+        "Membership & Subscription Module",
+        "Promotional Free Gift System",
+        "I-Carry Delivery Status Integration"
+      ],
+      results: "Successfully launched the membership module driving customer retention, and ensured reliable delivery tracking and automated background tasks."
+    }
+  },
+  {
     slug: "donation-system",
     title: "Donation Management System",
-    duration: "67 Days",
+    duration: "30-40 Days",
     description: "Helps admin as well as agents to register donors, collect donations for particular causes with automated receipt generation and email systems.",
     tags: ["Node.js", "Express", "PostgreSQL", "React", "Email Automation"],
     link: "https://dakshatashukla.in/",
@@ -55,9 +76,29 @@ export const PROJECTS: Project[] = [
     }
   },
   {
+    slug: "fashion-tailor-website",
+    title: "Fashion Tailor Management System",
+    duration: "30 Days",
+    description: "This platform serves as a comprehensive online hub for local fashion tailors, offering a seamless blend of traditional craftsmanship and modern digital convenience.",
+    tags: ["CMS", "React", "Tailwind CSS"],
+    link: "https://dakshatashukla.in",
+    caseStudy: {
+      problem: "The client needed a custom website to manage their website content, products, customization process, AI-generated designs, order management and user management.",
+      solution: "Built a custom website for the client to manage their website content, products, designs and users.",
+      features: [
+        "Customizable Product & Category Display",
+        "Step-by-Step Product Customization System",
+        "Appointment Booking System",
+        "Order Management System",
+        "User Management System"
+      ],
+      results: "Successfully launched the custom website for the client."
+    }
+  },
+  {
     slug: "investor-platform",
     title: "Investor Management Platform",
-    duration: "189 Days",
+    duration: "90-120 Days",
     description: "Dashboards for Investment bankers, founders, and admins to manage deals, approve/reject requests, and share documents.",
     tags: ["React", "Dashboard", "Next.js", "MySQL"],
     link: "https://dakshatashukla.in/",
@@ -76,7 +117,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "customizable-ecommerce",
     title: "Customizable eCommerce Platform",
-    duration: "30 Days",
+    duration: "60-90 Days",
     description: "Designed modular product and category layouts giving businesses granular control over store aesthetics.",
     tags: ["Next.js", "Tailwind CSS", "E-commerce", "Theming"],
     link: "https://dakshatashukla.in/",
