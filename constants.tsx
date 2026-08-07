@@ -36,8 +36,8 @@ export const PROFILE_DATA = {
 
 export const PROJECTS: Project[] = [
   {
-    slug: "yespoho-ecommerce",
-    title: "Yespoho E-Commerce Storefront",
+    slug: "e-commerce-storefront",
+    title: "E-Commerce Website",
     duration: "120-150 Days",
     description: "Developed UI and handled PHP (Laravel) backend logic. Fixed broken cron jobs, integrated I-Carry status updates, built a membership subscription module, and integrated AI-powered Virtual Try-On and Custom Saree Design features.",
     tags: ["PHP", "Laravel", "E-commerce", "Generative AI", "Subscriptions"],
@@ -78,7 +78,7 @@ export const PROJECTS: Project[] = [
   {
     slug: "fashion-tailor-website",
     title: "Fashion Tailor Management System",
-    duration: "30 Days",
+    duration: "30-40 Days",
     description: "This platform serves as a comprehensive online hub for local fashion tailors, offering a seamless blend of traditional craftsmanship and modern digital convenience.",
     tags: ["CMS", "React", "Tailwind CSS"],
     link: "https://dakshatashukla.in",
