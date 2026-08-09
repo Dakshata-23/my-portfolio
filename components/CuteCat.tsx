@@ -1,7 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
+import { ThemeContext } from '../App';
 import MEOW_SRC from '../assets/sound_garage-cat-meow-8-fx-306184.mp3';
 
 const CuteCat: React.FC = () => {
+  const { theme } = useContext(ThemeContext);
+  const isLight = theme === 'light';
+
+  // Dynamic Cat Colors based on Theme
+  const cBody = isLight ? '#b89076' : '#e6e6fa';    // Soft fawn/latte brown
+  const cShadow = isLight ? '#a67c62' : '#d8d8f6';  // Slightly darker brown for tail/legs
+  const cEyeBase = isLight ? '#3d2b1f' : '#2b2440'; // Very dark brown for eyes
+  const cEyeGlint = '#ffffff';
+
   const catRef = useRef<HTMLDivElement>(null);
   const [soundOn, setSoundOn] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -413,35 +423,35 @@ const CuteCat: React.FC = () => {
         onClick={handleCatClick}
         onMouseEnter={() => stateRef.current.isHovered = true}
         onMouseLeave={() => stateRef.current.isHovered = false}
-        className="fixed z-[100] cursor-pointer"
+        className="fixed z-[100] cursor-pointer drop-shadow-lg"
         style={{ left: catState.x, top: catState.y, transform: 'translate(-50%, -50%)', width: '96px', height: '96px', willChange: 'transform, left, top' }}
         title="pet me"
       >
         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: catState.flip ? 'scaleX(-1)' : 'none' }} className={catState.bob ? 'cat-bob' : ''}>
           {/* Tail */}
-          <path className="cat-tail" d="M24 66 C 4 64, 2 44, 14 40 C 8 52, 20 56, 26 58 Z" fill="#c9c2d6" />
+          <path className="cat-tail" d="M24 66 C 4 64, 2 44, 14 40 C 8 52, 20 56, 26 58 Z" fill={cShadow} />
           
           {/* Body */}
-          <ellipse cx="50" cy="72" rx="29" ry="23" fill="#e7e3ef" />
+          <ellipse cx="50" cy="72" rx="29" ry="23" fill={cBody} />
           
           {/* Back Paws */}
-          <ellipse cx="34" cy="90" rx="8" ry="6" fill="#d7d2e2" />
-          <ellipse cx="66" cy="90" rx="8" ry="6" fill="#d7d2e2" />
+          <ellipse cx="34" cy="90" rx="8" ry="6" fill={cShadow} />
+          <ellipse cx="66" cy="90" rx="8" ry="6" fill={cShadow} />
 
           {/* Front Paws (Cuter!) */}
-          <ellipse cx="42" cy="85" rx="5" ry="8" fill="#f2eef8" />
-          <ellipse cx="58" cy="85" rx="5" ry="8" fill="#f2eef8" />
+          <ellipse cx="42" cy="85" rx="5" ry="8" fill={cBody} />
+          <ellipse cx="58" cy="85" rx="5" ry="8" fill={cBody} />
           
           {/* Ears */}
-          <path d="M26 32 C26 20 30 10 33 8 C38 15 42 22 50 28 Z" fill="#e7e3ef" />
-          <path d="M74 32 C74 20 70 10 67 8 C62 15 58 22 50 28 Z" fill="#e7e3ef" />
+          <path d="M26 32 C26 20 30 10 33 8 C38 15 42 22 50 28 Z" fill={cBody} />
+          <path d="M74 32 C74 20 70 10 67 8 C62 15 58 22 50 28 Z" fill={cBody} />
           
           {/* Inner Ears (Pinker) */}
           <path d="M30 30 C31 22 33 16 34 14 C36 18 39 24 43 28 Z" fill="#ffb6c1" />
           <path d="M70 30 C69 22 67 16 66 14 C64 18 61 24 57 28 Z" fill="#ffb6c1" />
           
           {/* Head (Rounder & wider) */}
-          <ellipse cx="50" cy="46" rx="30" ry="26" fill="#f2eef8" />
+          <ellipse cx="50" cy="46" rx="30" ry="26" fill={cBody} />
           
           {/* Big Pink Cheeks */}
           <ellipse cx="30" cy="55" rx="8" ry="5.5" fill="#ffb6c1" opacity="0.85" />
@@ -450,28 +460,28 @@ const CuteCat: React.FC = () => {
           {/* Open/Normal Eyes (Bigger, starry) */}
           <g style={{ display: catState.happy || catState.sleep ? 'none' : 'block' }}>
             {/* Left Eye Base */}
-            <ellipse cx="38" cy="46" rx="7" ry="8" fill="#2b2440" style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
+            <ellipse cx="38" cy="46" rx="7" ry="8" fill={cEyeBase} style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
             {/* Right Eye Base */}
-            <ellipse cx="62" cy="46" rx="7" ry="8" fill="#2b2440" style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
+            <ellipse cx="62" cy="46" rx="7" ry="8" fill={cEyeBase} style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
             
             {/* Eye Glints (Cuteness!) - only these move to look around */}
             <g style={{ transform: `translate(${catState.eyeOffsetX}px, ${catState.eyeOffsetY}px)` }}>
-              <circle cx="40" cy="43" r="2.5" fill="#fff" />
-              <circle cx="36" cy="48" r="1" fill="#fff" />
+              <circle cx="40" cy="43" r="2.5" fill={cEyeGlint} />
+              <circle cx="36" cy="48" r="1" fill={cEyeGlint} />
               
-              <circle cx="64" cy="43" r="2.5" fill="#fff" />
-              <circle cx="60" cy="48" r="1" fill="#fff" />
+              <circle cx="64" cy="43" r="2.5" fill={cEyeGlint} />
+              <circle cx="60" cy="48" r="1" fill={cEyeGlint} />
             </g>
           </g>
 
           {/* Happy Eyes (^ ^) */}
-          <g style={{ display: catState.happy ? 'block' : 'none' }} fill="none" stroke="#2b2440" strokeWidth="3.5" strokeLinecap="round">
+          <g style={{ display: catState.happy ? 'block' : 'none' }} fill="none" stroke={cEyeBase} strokeWidth="3.5" strokeLinecap="round">
             <path d="M32 48 Q38 39 44 48" />
             <path d="M56 48 Q62 39 68 48" />
           </g>
 
           {/* Sleepy Eyes (- -) */}
-          <g style={{ display: catState.sleep && !catState.happy ? 'block' : 'none' }} stroke="#2b2440" strokeWidth="3.5" strokeLinecap="round">
+          <g style={{ display: catState.sleep && !catState.happy ? 'block' : 'none' }} stroke={cEyeBase} strokeWidth="3.5" strokeLinecap="round">
             <line x1="33" y1="47" x2="43" y2="47" />
             <line x1="57" y1="47" x2="67" y2="47" />
           </g>
@@ -480,10 +490,10 @@ const CuteCat: React.FC = () => {
           <path d="M48 53 C49 53 50 54 50 55 C50 54 51 53 52 53 Z" fill="#ff8da1" stroke="#ff8da1" strokeWidth="1.5" strokeLinecap="round" />
 
           {/* Normal Mouth */}
-          <path style={{ display: catState.happy ? 'none' : 'block' }} d="M50 56 Q45 61 40 57 M50 56 Q55 61 60 57" fill="none" stroke="#2b2440" strokeWidth="2.2" strokeLinecap="round" />
+          <path style={{ display: catState.happy ? 'none' : 'block' }} d="M50 56 Q45 61 40 57 M50 56 Q55 61 60 57" fill="none" stroke={cEyeBase} strokeWidth="2.2" strokeLinecap="round" />
 
           {/* Happy Mouth (Wide open!) */}
-          <path style={{ display: catState.happy ? 'block' : 'none' }} d="M42 56 Q50 68 58 56" fill="none" stroke="#2b2440" strokeWidth="2.5" strokeLinecap="round" />
+          <path style={{ display: catState.happy ? 'block' : 'none' }} d="M42 56 Q50 68 58 56" fill="none" stroke={cEyeBase} strokeWidth="2.5" strokeLinecap="round" />
           <path style={{ display: catState.happy ? 'block' : 'none' }} d="M44 57 Q50 66 56 57 Z" fill="#ff8da1" />
 
           {/* Whiskers (Slightly lowered) */}
