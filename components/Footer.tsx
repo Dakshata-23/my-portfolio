@@ -3,7 +3,7 @@ import { PROFILE_DATA } from '../constants';
 
 const Footer: React.FC = () => {
   return (
-    <footer id="contact" className="max-w-3xl mx-auto px-6 py-16 border-t border-gray-200 pb-32">
+    <footer id="contact" className="max-w-5xl mx-auto px-6 lg:px-8 py-16 border-t border-accent pb-32">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div>
           <h2 className="text-xl font-medium mb-2 text-textPrimary tracking-tight">Contact</h2>

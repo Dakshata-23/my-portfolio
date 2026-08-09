@@ -64,6 +64,7 @@ const App: React.FC = () => {
       <ThemeContext.Provider value={{ theme, toggleTheme }}>
         <div className="min-h-screen">
           <Background />
+          <CustomCursor />
           <CaseStudy project={selectedProject} onBack={handleBackToHome} />
           <CuteCat />
         </div>

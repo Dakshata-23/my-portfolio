@@ -3,14 +3,14 @@ import { Project, Experience } from './types';
 
 export const PROFILE_DATA = {
   name: "DAKSHATA SHUKLA",
-  role: "Full Stack Developer",
+  role: "Full-Stack Developer",
   experience: "2 Year 3 Months",
   location: "Pune, INDIA",
-  email: "dakshatashukla96@gmail.com",
+  email: "dakshata2316@gmail.com",
   phone: "9767947281",
   linkedin: "https://www.linkedin.com/in/dakshata-shukla/",
   website: "https://dakshatashukla.in/",
-  summary: "Full-Stack Developer with strong experience in Node.js, Express, PostgreSQL, Prisma, React, Next.js, and TypeScript. I create smooth APIs, clean frontends, and complete systems like bookings, dashboards, and e-commerce flows. I also handle authentication, email automation, PDF creation, and deployments with NGINX, PM2, and Vercel.",
+  summary: "I’m a Full-Stack Developer who loves turning 'this should be simple' into software that actually is. I take the parts everyone avoids (auth, billing, background jobs, and deployments) and make them boring on purpose. If it runs at 2 AM and nobody notices, I’m doing something right.",
   skillCategories: {
     languages: ["Node.js", "PHP", "JavaScript", "SQL", "PostgreSQL", "TypeScript (basic)"],
     frontend: ["React.js", "Next.js", "Tailwind CSS", "HTML5", "CSS3"],
