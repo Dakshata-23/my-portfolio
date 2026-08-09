@@ -7,6 +7,8 @@ import CuteCat from './components/CuteCat';
 import Footer from './components/Footer';
 import CaseStudy from './components/CaseStudy';
 import TechGame from './components/TechGame';
+import Background from './components/Background';
+import CustomCursor from './components/CustomCursor';
 import { EXPERIENCES, PROFILE_DATA } from './constants';
 import { Project } from './types';
 
@@ -61,6 +63,7 @@ const App: React.FC = () => {
     return (
       <ThemeContext.Provider value={{ theme, toggleTheme }}>
         <div className="min-h-screen">
+          <Background />
           <CaseStudy project={selectedProject} onBack={handleBackToHome} />
           <CuteCat />
         </div>
@@ -71,9 +74,11 @@ const App: React.FC = () => {
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <div className="min-h-screen relative overflow-x-hidden">
+        <Background />
+        <CustomCursor />
         <Header />
         
-        <main className="max-w-3xl mx-auto px-6 py-24">
+        <main className="max-w-5xl mx-auto px-6 lg:px-8 py-24">
           <Hero />
           
           <div className="h-px bg-gray-200 dark:bg-gray-800 my-16 transition-colors"></div>
@@ -109,8 +114,8 @@ const App: React.FC = () => {
         </main>
 
         <Footer />
-        <CuteCat />
       </div>
+      <CuteCat />
     </ThemeContext.Provider>
   );
 };

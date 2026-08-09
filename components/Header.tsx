@@ -22,7 +22,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+    <div className="fixed bottom-6 left-0 right-0 z-[90] flex justify-center pointer-events-none">
       <motion.nav
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

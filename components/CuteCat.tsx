@@ -17,6 +17,8 @@ const CuteCat: React.FC = () => {
     bubbleText: string;
     showBubble: boolean;
     showMenu: boolean;
+    eyeOffsetX: number;
+    eyeOffsetY: number;
   }>({
     x: window.innerWidth / 2,
     y: window.innerHeight * 0.62,
@@ -27,7 +29,9 @@ const CuteCat: React.FC = () => {
     blink: false,
     bubbleText: '',
     showBubble: false,
-    showMenu: false
+    showMenu: false,
+    eyeOffsetX: 0,
+    eyeOffsetY: 0
   });
 
   const [floatingElements, setFloatingElements] = useState<{ id: number; type: 'z' | 'heart'; txt: string; x: number; y: number }[]>([]);
@@ -49,6 +53,7 @@ const CuteCat: React.FC = () => {
     menuShown: false,
     sleep: false,
     happy: false,
+    isHovered: false,
     // Nav Flow State
     navState: 'none' as 'none' | 'following'
   });
@@ -174,9 +179,6 @@ const CuteCat: React.FC = () => {
           stateRef.current.mode = 'roam';
           stateRef.current.modeUntil = now() - 1000; // Force picking a new roam target immediately
         }
-      } else if (Math.random() < 0.5 && !stateRef.current.menuShown && stateRef.current.navState === 'none') {
-        stateRef.current.mode = 'follow';
-        stateRef.current.modeUntil = now() + rand(2500, 5000);
       }
     };
 
@@ -214,8 +216,8 @@ const CuteCat: React.FC = () => {
       }
 
       while (!valid && attempts < 15) {
-        targetX = rand(80, window.innerWidth - 80);
-        targetY = rand(140, window.innerHeight - 90);
+        targetX = rand(50, document.documentElement.clientWidth - 50);
+        targetY = window.innerHeight - 90; // Fixed Y position for horizontal roaming
         valid = true;
         
         if (pRect) {
@@ -263,6 +265,16 @@ const CuteCat: React.FC = () => {
       let sleep = false;
       let blink = false;
 
+      // Calculate Eye Offset to look at cursor
+      const dxToMouse = s.cx - s.x;
+      const dyToMouse = s.cy - screenTargetY; // Relative to current screen Y
+      const angleToMouse = Math.atan2(dyToMouse, dxToMouse);
+      const distToMouse = Math.hypot(dxToMouse, dyToMouse);
+      
+      const maxOffset = Math.min(distToMouse / 60, 3.5);
+      const eyeOffsetX = Math.cos(angleToMouse) * maxOffset * (flip ? -1 : 1); // Reverse offset if body is flipped
+      const eyeOffsetY = Math.sin(angleToMouse) * maxOffset;
+
       // Handle Nav Flow sequence transitions
       if (s.navState === 'following') {
         // Did we arrive? (Close enough to target in screen space)
@@ -274,9 +286,9 @@ const CuteCat: React.FC = () => {
       }
 
       const isFollowingCursor = s.mode === 'follow' && s.navState === 'none';
-      // Only move if we aren't showing the menu, or we need to catch up
-      if (!s.menuShown && dist > (isFollowingCursor ? 80 : 6)) {
-        const sp = Math.min(dist, s.navState !== 'none' ? 10 : (isFollowingCursor ? 6 : 3.2));
+      // Only move if we aren't showing the menu, or we need to catch up, and NOT hovered
+      if (!s.menuShown && !s.isHovered && dist > (isFollowingCursor ? 80 : 6)) {
+        const sp = Math.min(dist, s.navState !== 'none' ? 10 : (isFollowingCursor ? 6 : 1.5));
         s.x += (dx / dist) * sp;
         s.y += (dy / dist) * sp;
         s.moving = true;
@@ -285,6 +297,12 @@ const CuteCat: React.FC = () => {
       } else {
         s.moving = false;
         bob = false;
+      }
+
+      // Clamp position to ensure she never walks out of the screen (accounting for scrollbars)
+      s.x = Math.max(50, Math.min(s.x, document.documentElement.clientWidth - 50));
+
+      if (!s.moving) {
         if (s.mode === 'roam' && t > s.modeUntil && s.navState === 'none') {
           roamTarget();
           s.ty += window.scrollY;
@@ -320,7 +338,9 @@ const CuteCat: React.FC = () => {
         flip,
         bob,
         sleep: s.sleep,
-        blink: prev.blink || blink
+        blink: prev.blink || blink,
+        eyeOffsetX,
+        eyeOffsetY
       }));
 
       if (blink) {
@@ -391,49 +411,92 @@ const CuteCat: React.FC = () => {
       <div
         ref={catRef}
         onClick={handleCatClick}
+        onMouseEnter={() => stateRef.current.isHovered = true}
+        onMouseLeave={() => stateRef.current.isHovered = false}
         className="fixed z-[100] cursor-pointer"
         style={{ left: catState.x, top: catState.y, transform: 'translate(-50%, -50%)', width: '96px', height: '96px', willChange: 'transform, left, top' }}
         title="pet me"
       >
         <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: catState.flip ? 'scaleX(-1)' : 'none' }} className={catState.bob ? 'cat-bob' : ''}>
+          {/* Tail */}
           <path className="cat-tail" d="M24 66 C 4 64, 2 44, 14 40 C 8 52, 20 56, 26 58 Z" fill="#c9c2d6" />
-          <ellipse cx="50" cy="70" rx="27" ry="21" fill="#e7e3ef" />
-          <ellipse cx="38" cy="88" rx="7" ry="5" fill="#d7d2e2" />
-          <ellipse cx="62" cy="88" rx="7" ry="5" fill="#d7d2e2" />
-          <path d="M27 30 L33 8 L49 26 Z" fill="#e7e3ef" />
-          <path d="M73 30 L67 8 L51 26 Z" fill="#e7e3ef" />
-          <path d="M32 24 L35 13 L43 24 Z" fill="#f3aecb" />
-          <path d="M68 24 L65 13 L57 24 Z" fill="#f3aecb" />
-          <circle cx="50" cy="44" r="27" fill="#f2eef8" />
-          <ellipse cx="33" cy="52" rx="6" ry="4" fill="#f7bcd6" opacity=".8" />
-          <ellipse cx="67" cy="52" rx="6" ry="4" fill="#f7bcd6" opacity=".8" />
+          
+          {/* Body */}
+          <ellipse cx="50" cy="72" rx="29" ry="23" fill="#e7e3ef" />
+          
+          {/* Back Paws */}
+          <ellipse cx="34" cy="90" rx="8" ry="6" fill="#d7d2e2" />
+          <ellipse cx="66" cy="90" rx="8" ry="6" fill="#d7d2e2" />
 
+          {/* Front Paws (Cuter!) */}
+          <ellipse cx="42" cy="85" rx="5" ry="8" fill="#f2eef8" />
+          <ellipse cx="58" cy="85" rx="5" ry="8" fill="#f2eef8" />
+          
+          {/* Ears */}
+          <path d="M26 32 C26 20 30 10 33 8 C38 15 42 22 50 28 Z" fill="#e7e3ef" />
+          <path d="M74 32 C74 20 70 10 67 8 C62 15 58 22 50 28 Z" fill="#e7e3ef" />
+          
+          {/* Inner Ears (Pinker) */}
+          <path d="M30 30 C31 22 33 16 34 14 C36 18 39 24 43 28 Z" fill="#ffb6c1" />
+          <path d="M70 30 C69 22 67 16 66 14 C64 18 61 24 57 28 Z" fill="#ffb6c1" />
+          
+          {/* Head (Rounder & wider) */}
+          <ellipse cx="50" cy="46" rx="30" ry="26" fill="#f2eef8" />
+          
+          {/* Big Pink Cheeks */}
+          <ellipse cx="30" cy="55" rx="8" ry="5.5" fill="#ffb6c1" opacity="0.85" />
+          <ellipse cx="70" cy="55" rx="8" ry="5.5" fill="#ffb6c1" opacity="0.85" />
+
+          {/* Open/Normal Eyes (Bigger, starry) */}
           <g style={{ display: catState.happy || catState.sleep ? 'none' : 'block' }}>
-            <circle cx="40" cy="44" r="5.5" fill="#2b2440" style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
-            <circle cx="60" cy="44" r="5.5" fill="#2b2440" style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
-            <circle cx="42" cy="42" r="1.6" fill="#fff" />
-            <circle cx="62" cy="42" r="1.6" fill="#fff" />
+            {/* Left Eye Base */}
+            <ellipse cx="38" cy="46" rx="7" ry="8" fill="#2b2440" style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
+            {/* Right Eye Base */}
+            <ellipse cx="62" cy="46" rx="7" ry="8" fill="#2b2440" style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
+            
+            {/* Eye Glints (Cuteness!) - only these move to look around */}
+            <g style={{ transform: `translate(${catState.eyeOffsetX}px, ${catState.eyeOffsetY}px)` }}>
+              <circle cx="40" cy="43" r="2.5" fill="#fff" />
+              <circle cx="36" cy="48" r="1" fill="#fff" />
+              
+              <circle cx="64" cy="43" r="2.5" fill="#fff" />
+              <circle cx="60" cy="48" r="1" fill="#fff" />
+            </g>
           </g>
 
-          <g style={{ display: catState.happy ? 'block' : 'none' }} fill="none" stroke="#2b2440" strokeWidth="3" strokeLinecap="round">
-            <path d="M34 46 Q40 39 46 46" />
-            <path d="M54 46 Q60 39 66 46" />
+          {/* Happy Eyes (^ ^) */}
+          <g style={{ display: catState.happy ? 'block' : 'none' }} fill="none" stroke="#2b2440" strokeWidth="3.5" strokeLinecap="round">
+            <path d="M32 48 Q38 39 44 48" />
+            <path d="M56 48 Q62 39 68 48" />
           </g>
 
-          <g style={{ display: catState.sleep && !catState.happy ? 'block' : 'none' }} stroke="#2b2440" strokeWidth="3" strokeLinecap="round">
-            <line x1="35" y1="45" x2="45" y2="45" />
-            <line x1="55" y1="45" x2="65" y2="45" />
+          {/* Sleepy Eyes (- -) */}
+          <g style={{ display: catState.sleep && !catState.happy ? 'block' : 'none' }} stroke="#2b2440" strokeWidth="3.5" strokeLinecap="round">
+            <line x1="33" y1="47" x2="43" y2="47" />
+            <line x1="57" y1="47" x2="67" y2="47" />
           </g>
 
-          <path d="M47 52 L53 52 L50 55 Z" fill="#e086ad" />
+          {/* Tiny Cute Nose */}
+          <path d="M48 53 C49 53 50 54 50 55 C50 54 51 53 52 53 Z" fill="#ff8da1" stroke="#ff8da1" strokeWidth="1.5" strokeLinecap="round" />
 
-          <path style={{ display: catState.happy ? 'none' : 'block' }} d="M50 55 Q46 60 42 57 M50 55 Q54 60 58 57" fill="none" stroke="#2b2440" strokeWidth="2" strokeLinecap="round" />
+          {/* Normal Mouth */}
+          <path style={{ display: catState.happy ? 'none' : 'block' }} d="M50 56 Q45 61 40 57 M50 56 Q55 61 60 57" fill="none" stroke="#2b2440" strokeWidth="2.2" strokeLinecap="round" />
 
-          <path style={{ display: catState.happy ? 'block' : 'none' }} d="M42 56 Q50 65 58 56" fill="none" stroke="#2b2440" strokeWidth="2.4" strokeLinecap="round" />
+          {/* Happy Mouth (Wide open!) */}
+          <path style={{ display: catState.happy ? 'block' : 'none' }} d="M42 56 Q50 68 58 56" fill="none" stroke="#2b2440" strokeWidth="2.5" strokeLinecap="round" />
+          <path style={{ display: catState.happy ? 'block' : 'none' }} d="M44 57 Q50 66 56 57 Z" fill="#ff8da1" />
 
+          {/* Whiskers (Slightly lowered) */}
           <g stroke="#c9c2d6" strokeWidth="1.5" strokeLinecap="round">
-            <line x1="20" y1="50" x2="33" y2="52" /><line x1="20" y1="56" x2="33" y2="56" />
-            <line x1="80" y1="50" x2="67" y2="52" /><line x1="80" y1="56" x2="67" y2="56" />
+            <line x1="16" y1="52" x2="28" y2="54" /><line x1="15" y1="58" x2="28" y2="57" />
+            <line x1="84" y1="52" x2="72" y2="54" /><line x1="85" y1="58" x2="72" y2="57" />
+          </g>
+          
+          {/* Tiny Red Bow (near right ear) */}
+          <g transform="translate(62, 22) rotate(15)">
+            <path d="M0,0 Q-4,-6 -8,-4 Q-10,-2 -8,2 Q-4,4 0,0 Z" fill="#ff4d4d" />
+            <path d="M0,0 Q4,-6 8,-4 Q10,-2 8,2 Q4,4 0,0 Z" fill="#ff4d4d" />
+            <circle cx="0" cy="0" r="2.5" fill="#ff1a1a" />
           </g>
         </svg>
       </div>
