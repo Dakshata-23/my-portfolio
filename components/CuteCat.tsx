@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { ThemeContext } from '../App';
+import { ThemeContext, MusicContext } from '../App';
 import MEOW_SRC from '../assets/sound_garage-cat-meow-8-fx-306184.mp3';
 
 const CuteCat: React.FC = () => {
@@ -13,8 +13,7 @@ const CuteCat: React.FC = () => {
   const cEyeGlint = '#ffffff';
 
   const catRef = useRef<HTMLDivElement>(null);
-  const [soundOn, setSoundOn] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const { isPlaying } = useContext(MusicContext);
 
   const [catState, setCatState] = useState<{
     x: number;
@@ -29,6 +28,7 @@ const CuteCat: React.FC = () => {
     showMenu: boolean;
     eyeOffsetX: number;
     eyeOffsetY: number;
+    dancePhase: number;
   }>({
     x: window.innerWidth / 2,
     y: window.innerHeight * 0.62,
@@ -41,7 +41,8 @@ const CuteCat: React.FC = () => {
     showBubble: false,
     showMenu: false,
     eyeOffsetX: 0,
-    eyeOffsetY: 0
+    eyeOffsetY: 0,
+    dancePhase: 0
   });
 
   const [floatingElements, setFloatingElements] = useState<{ id: number; type: 'z' | 'heart'; txt: string; x: number; y: number }[]>([]);
@@ -65,7 +66,9 @@ const CuteCat: React.FC = () => {
     happy: false,
     isHovered: false,
     // Nav Flow State
-    navState: 'none' as 'none' | 'following'
+    navState: 'none' as 'none' | 'following',
+    dancing: false,
+    dancePhase: 0
   });
 
   const floatId = useRef(0);
@@ -78,7 +81,6 @@ const CuteCat: React.FC = () => {
   const now = () => performance.now();
 
   const playMeow = (forcePlay = false) => {
-    if (!soundOn && !forcePlay) return;
     try {
       const a = new Audio(MEOW_SRC);
       a.volume = 0.75;
@@ -213,6 +215,19 @@ const CuteCat: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (isPlaying) {
+      stateRef.current.dancing = true;
+      // 10% chance to show a music bubble when it starts playing
+      if (Math.random() < 0.1 && !stateRef.current.bubbleShown) {
+        say(['♪', '♫', '♬', '💃', '🕺'][Math.floor(Math.random() * 5)], 1500);
+      }
+    } else {
+      stateRef.current.dancing = false;
+      setCatState(prev => ({ ...prev, dancePhase: 0 }));
+    }
+  }, [isPlaying]);
+
+  useEffect(() => {
     const roamTarget = () => {
       let targetX = 0;
       let targetY = 0;
@@ -265,12 +280,19 @@ const CuteCat: React.FC = () => {
       // Convert global y target to fixed screen space for animation
       const screenTargetY = s.ty - window.scrollY;
 
+      if (s.dancing) {
+        const cycleTime = t % 7000;
+        s.dancePhase = cycleTime < 5000 ? 1 : 2;
+      } else {
+        s.dancePhase = 0;
+      }
+
       const dx = s.tx - s.x;
       const dy = screenTargetY - s.y;
       const dist = Math.hypot(dx, dy);
       const idle = (t - s.lastMove > 6000) && s.mode === 'roam' && s.navState === 'none';
 
-      let flip = false;
+      let flip = dx < -0.5;
       let bob = false;
       let sleep = false;
       let blink = false;
@@ -296,13 +318,12 @@ const CuteCat: React.FC = () => {
       }
 
       const isFollowingCursor = s.mode === 'follow' && s.navState === 'none';
-      // Only move if we aren't showing the menu, or we need to catch up, and NOT hovered
-      if (!s.menuShown && !s.isHovered && dist > (isFollowingCursor ? 80 : 6)) {
+      // Only move if we aren't showing the menu, or we need to catch up, and NOT hovered, AND NOT dancing
+      if (!s.dancing && !s.menuShown && !s.isHovered && dist > (isFollowingCursor ? 80 : 6)) {
         const sp = Math.min(dist, s.navState !== 'none' ? 10 : (isFollowingCursor ? 6 : 1.5));
         s.x += (dx / dist) * sp;
         s.y += (dy / dist) * sp;
         s.moving = true;
-        flip = dx < -0.5;
         bob = true;
       } else {
         s.moving = false;
@@ -320,7 +341,7 @@ const CuteCat: React.FC = () => {
         }
       }
 
-      if (!s.happy && !s.menuShown && s.navState === 'none') {
+      if (!s.happy && !s.menuShown && s.navState === 'none' && !s.dancing) {
         if (idle && !s.moving) {
           s.sleep = true;
           sleep = true;
@@ -350,7 +371,8 @@ const CuteCat: React.FC = () => {
         sleep: s.sleep,
         blink: prev.blink || blink,
         eyeOffsetX,
-        eyeOffsetY
+        eyeOffsetY,
+        dancePhase: s.dancePhase
       }));
 
       if (blink) {
@@ -378,25 +400,44 @@ const CuteCat: React.FC = () => {
       }, rand(7000, 13000));
     };
     schedule();
-  }, [isHidden]);
-
-  if (isHidden) {
-    return null;
-  }
+  }, []);
 
   return (
     <>
       <style>{`
         .cat-bob { animation: bob .28s ease-in-out infinite; }
         @keyframes bob { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-2px) } }
-        .cat-tail { transform-origin: 22px 66px; animation: tail 1.6s ease-in-out infinite; }
-        @keyframes tail { 0%, 100% { transform: rotate(0) } 50% { transform: rotate(-16deg) } }
+        .cat-tail { transform-origin: 22px 66px; animation: tail 2s ease-in-out infinite; }
+        @keyframes tail { 0%, 100% { transform: rotate(15deg) } 50% { transform: rotate(-15deg) } }
         .cat-heart { position: fixed; z-index: 110; pointer-events: none; font-size: 20px; animation: heart 1s ease-out forwards; }
         @keyframes heart { 0% { opacity: 0; transform: translateY(0) scale(.4) } 20% { opacity: 1 } 100% { opacity: 0; transform: translateY(-46px) scale(1.1) } }
         .cat-zzz { position: fixed; z-index: 110; pointer-events: none; color: #a2a3ad; font-family: monospace; font-size: 14px; animation: heart 1.6s ease-out forwards; }
         .cat-bubble { position: fixed; z-index: 110; transform: translate(-50%, -100%); background: #f4eff9; color: #2b2440; font: 600 12.5px -apple-system, sans-serif; padding: 7px 13px; border-radius: 13px; box-shadow: 0 6px 18px rgba(0,0,0,.32); opacity: 0; transition: opacity .22s ease, transform .22s ease; pointer-events: none; }
         .cat-bubble.show { opacity: 1; pointer-events: auto; }
         .cat-bubble::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 11px; height: 11px; background: #f4eff9; transform: translateX(-50%) rotate(45deg); border-radius: 2px; }
+        .cat-dancing-1 { animation: dance 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) infinite !important; }
+        .cat-dancing-2 { animation: dance-wide 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
+        @keyframes dance { 
+          0%, 100% { transform: translateY(0) scale(1) rotate(0); } 
+          25% { transform: translateY(-12px) scale(1.05) rotate(-10deg); } 
+          50% { transform: translateY(-4px) scale(1.02) rotate(0); }
+          75% { transform: translateY(-12px) scale(1.05) rotate(10deg); } 
+        }
+        @keyframes dance-wide {
+          0%, 100% { transform: translateX(0) scale(1) rotate(0); }
+          25% { transform: translateX(-35px) scale(1.05) rotate(-15deg); }
+          50% { transform: translateX(0) scale(1) rotate(0); }
+          75% { transform: translateX(35px) scale(1.05) rotate(15deg); }
+        }
+        .cat-dancing-1 .cat-tail, .cat-dancing-2 .cat-tail { animation: tail-dance 0.45s ease-in-out infinite !important; }
+        @keyframes tail-dance { 0%, 100% { transform: rotate(40deg) } 50% { transform: rotate(-40deg) } }
+        .cat-dancing-1 .cat-eyes-dance, .cat-dancing-2 .cat-eyes-dance { animation: eyes-dance 0.9s ease-in-out infinite !important; }
+        @keyframes eyes-dance {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-4px, -2px); }
+          50% { transform: translate(4px, 2px); }
+          75% { transform: translate(-2px, 2px); }
+        }
       `}</style>
 
       {floatingElements.map(el => (
@@ -427,7 +468,7 @@ const CuteCat: React.FC = () => {
         style={{ left: catState.x, top: catState.y, transform: 'translate(-50%, -50%)', width: '96px', height: '96px', willChange: 'transform, left, top' }}
         title="pet me"
       >
-        <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: catState.flip ? 'scaleX(-1)' : 'none' }} className={catState.bob ? 'cat-bob' : ''}>
+        <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: catState.flip ? 'scaleX(-1)' : 'none' }} className={`${catState.bob ? 'cat-bob' : ''} ${catState.dancePhase === 1 ? 'cat-dancing-1' : catState.dancePhase === 2 ? 'cat-dancing-2' : ''}`}>
           {/* Tail */}
           <path className="cat-tail" d="M24 66 C 4 64, 2 44, 14 40 C 8 52, 20 56, 26 58 Z" fill={cShadow} />
           
@@ -465,12 +506,14 @@ const CuteCat: React.FC = () => {
             <ellipse cx="62" cy="46" rx="7" ry="8" fill={cEyeBase} style={{ transform: catState.blink ? 'scaleY(0.1)' : 'none', transformOrigin: 'center', transformBox: 'fill-box' }} />
             
             {/* Eye Glints (Cuteness!) - only these move to look around */}
-            <g style={{ transform: `translate(${catState.eyeOffsetX}px, ${catState.eyeOffsetY}px)` }}>
-              <circle cx="40" cy="43" r="2.5" fill={cEyeGlint} />
-              <circle cx="36" cy="48" r="1" fill={cEyeGlint} />
-              
-              <circle cx="64" cy="43" r="2.5" fill={cEyeGlint} />
-              <circle cx="60" cy="48" r="1" fill={cEyeGlint} />
+            <g className={catState.dancePhase > 0 ? 'cat-eyes-dance' : ''}>
+              <g style={{ transform: `translate(${catState.eyeOffsetX}px, ${catState.eyeOffsetY}px)` }}>
+                <circle cx="40" cy="43" r="2.5" fill={cEyeGlint} />
+                <circle cx="36" cy="48" r="1" fill={cEyeGlint} />
+                
+                <circle cx="64" cy="43" r="2.5" fill={cEyeGlint} />
+                <circle cx="60" cy="48" r="1" fill={cEyeGlint} />
+              </g>
             </g>
           </g>
 

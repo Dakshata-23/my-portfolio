@@ -11,6 +11,7 @@ import Background from './components/Background';
 import CustomCursor from './components/CustomCursor';
 import { EXPERIENCES, PROFILE_DATA } from './constants';
 import { Project } from './types';
+import MusicPlayer from './components/MusicPlayer';
 
 // Theme Context
 export const ThemeContext = createContext<{
@@ -18,11 +19,18 @@ export const ThemeContext = createContext<{
   toggleTheme: () => void;
 }>({ theme: 'light', toggleTheme: () => {} });
 
+// Music Context
+export const MusicContext = createContext<{
+  isPlaying: boolean;
+  setIsPlaying: (playing: boolean) => void;
+}>({ isPlaying: false, setIsPlaying: () => {} });
+
 const App: React.FC = () => {
   const [activeView, setActiveView] = useState<'home' | 'case-study'>('home');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [scrollPos, setScrollPos] = useState(0);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Theme logic
   useEffect(() => {
@@ -62,19 +70,23 @@ const App: React.FC = () => {
   if (activeView === 'case-study' && selectedProject) {
     return (
       <ThemeContext.Provider value={{ theme, toggleTheme }}>
-        <div className="min-h-screen">
+        <MusicContext.Provider value={{ isPlaying: isMusicPlaying, setIsPlaying: setIsMusicPlaying }}>
+          <div className="min-h-screen">
           <Background />
           <CustomCursor />
-          <CaseStudy project={selectedProject} onBack={handleBackToHome} />
-          <CuteCat />
-        </div>
+            <CaseStudy project={selectedProject} onBack={handleBackToHome} />
+            <CuteCat />
+            <MusicPlayer />
+          </div>
+        </MusicContext.Provider>
       </ThemeContext.Provider>
     );
   }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <div className="min-h-screen relative overflow-x-hidden">
+      <MusicContext.Provider value={{ isPlaying: isMusicPlaying, setIsPlaying: setIsMusicPlaying }}>
+        <div className="min-h-screen relative overflow-x-hidden">
         <Background />
         <CustomCursor />
         <Header />
@@ -114,9 +126,11 @@ const App: React.FC = () => {
           <Projects onViewCaseStudy={handleViewCaseStudy} />
         </main>
 
-        <Footer />
-      </div>
-      <CuteCat />
+          <Footer />
+        </div>
+        <CuteCat />
+        <MusicPlayer />
+      </MusicContext.Provider>
     </ThemeContext.Provider>
   );
 };
