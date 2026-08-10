@@ -277,15 +277,12 @@ const CuteCat: React.FC = () => {
         }
       }
 
+      if (s.mode === 'roam' && s.navState === 'none') {
+        s.ty = window.innerHeight - 90 + window.scrollY;
+      }
+      
       // Convert global y target to fixed screen space for animation
       const screenTargetY = s.ty - window.scrollY;
-
-      if (s.dancing) {
-        const cycleTime = t % 7000;
-        s.dancePhase = cycleTime < 5000 ? 1 : 2;
-      } else {
-        s.dancePhase = 0;
-      }
 
       const dx = s.tx - s.x;
       const dy = screenTargetY - s.y;
@@ -293,6 +290,21 @@ const CuteCat: React.FC = () => {
       const idle = (t - s.lastMove > 6000) && s.mode === 'roam' && s.navState === 'none';
 
       let flip = dx < -0.5;
+
+      if (s.dancing) {
+        const cycleTime = t % 11000;
+        if (cycleTime < 5000) {
+          s.dancePhase = 1;
+        } else if (cycleTime < 7000) {
+          s.dancePhase = 2;
+        } else {
+          s.dancePhase = 3;
+          flip = (cycleTime - 7000) < 2000;
+        }
+      } else {
+        s.dancePhase = 0;
+      }
+
       let bob = false;
       let sleep = false;
       let blink = false;
@@ -392,7 +404,7 @@ const CuteCat: React.FC = () => {
   useEffect(() => {
     const schedule = () => {
       setTimeout(() => {
-        if (!document.hidden && !isHidden && !stateRef.current.bubbleShown && stateRef.current.navState === 'none') {
+        if (!document.hidden && !stateRef.current.bubbleShown && stateRef.current.navState === 'none') {
           const pool = stateRef.current.sleep ? SLEEPY : THOUGHTS;
           say(pool[Math.floor(Math.random() * pool.length)], 3200);
         }
@@ -417,6 +429,7 @@ const CuteCat: React.FC = () => {
         .cat-bubble::after { content: ""; position: absolute; left: 50%; bottom: -4px; width: 11px; height: 11px; background: #f4eff9; transform: translateX(-50%) rotate(45deg); border-radius: 2px; }
         .cat-dancing-1 { animation: dance 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) infinite !important; }
         .cat-dancing-2 { animation: dance-wide 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
+        .cat-dancing-3 { animation: dance-step 3.6s ease-in-out infinite !important; }
         @keyframes dance { 
           0%, 100% { transform: translateY(0) scale(1) rotate(0); } 
           25% { transform: translateY(-12px) scale(1.05) rotate(-10deg); } 
@@ -429,9 +442,25 @@ const CuteCat: React.FC = () => {
           50% { transform: translateX(0) scale(1) rotate(0); }
           75% { transform: translateX(35px) scale(1.05) rotate(15deg); }
         }
-        .cat-dancing-1 .cat-tail, .cat-dancing-2 .cat-tail { animation: tail-dance 0.45s ease-in-out infinite !important; }
+        @keyframes dance-step {
+          0% { transform: translateX(0) translateY(0); }
+          8% { transform: translateX(-25px) translateY(-10px); }
+          16% { transform: translateX(-50px) translateY(0); }
+          24% { transform: translateX(-75px) translateY(-10px); }
+          32% { transform: translateX(-100px) translateY(0); }
+          40% { transform: translateX(-125px) translateY(-10px); }
+          48% { transform: translateX(-150px) translateY(0); }
+          50% { transform: translateX(-150px) translateY(0); }
+          58% { transform: translateX(-125px) translateY(-10px); }
+          66% { transform: translateX(-100px) translateY(0); }
+          74% { transform: translateX(-75px) translateY(-10px); }
+          82% { transform: translateX(-50px) translateY(0); }
+          90% { transform: translateX(-25px) translateY(-10px); }
+          98%, 100% { transform: translateX(0) translateY(0); }
+        }
+        .cat-dancing-1 .cat-tail, .cat-dancing-2 .cat-tail, .cat-dancing-3 .cat-tail { animation: tail-dance 0.45s ease-in-out infinite !important; }
         @keyframes tail-dance { 0%, 100% { transform: rotate(40deg) } 50% { transform: rotate(-40deg) } }
-        .cat-dancing-1 .cat-eyes-dance, .cat-dancing-2 .cat-eyes-dance { animation: eyes-dance 0.9s ease-in-out infinite !important; }
+        .cat-dancing-1 .cat-eyes-dance, .cat-dancing-2 .cat-eyes-dance, .cat-dancing-3 .cat-eyes-dance { animation: eyes-dance 0.9s ease-in-out infinite !important; }
         @keyframes eyes-dance {
           0%, 100% { transform: translate(0, 0); }
           25% { transform: translate(-4px, -2px); }
@@ -468,8 +497,9 @@ const CuteCat: React.FC = () => {
         style={{ left: catState.x, top: catState.y, transform: 'translate(-50%, -50%)', width: '96px', height: '96px', willChange: 'transform, left, top' }}
         title="pet me"
       >
-        <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: catState.flip ? 'scaleX(-1)' : 'none' }} className={`${catState.bob ? 'cat-bob' : ''} ${catState.dancePhase === 1 ? 'cat-dancing-1' : catState.dancePhase === 2 ? 'cat-dancing-2' : ''}`}>
-          {/* Tail */}
+        <div className={`${catState.bob ? 'cat-bob' : ''} ${catState.dancePhase === 1 ? 'cat-dancing-1' : catState.dancePhase === 2 ? 'cat-dancing-2' : catState.dancePhase === 3 ? 'cat-dancing-3' : ''}`} style={{ width: '100%', height: '100%' }}>
+          <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: catState.flip ? 'scaleX(-1)' : 'none' }}>
+            {/* Tail */}
           <path className="cat-tail" d="M24 66 C 4 64, 2 44, 14 40 C 8 52, 20 56, 26 58 Z" fill={cShadow} />
           
           {/* Body */}
@@ -551,7 +581,8 @@ const CuteCat: React.FC = () => {
             <path d="M0,0 Q4,-6 8,-4 Q10,-2 8,2 Q4,4 0,0 Z" fill="#ff4d4d" />
             <circle cx="0" cy="0" r="2.5" fill="#ff1a1a" />
           </g>
-        </svg>
+          </svg>
+        </div>
       </div>
 
     </>
