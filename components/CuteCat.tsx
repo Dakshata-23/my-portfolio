@@ -217,6 +217,15 @@ const CuteCat: React.FC = () => {
   useEffect(() => {
     if (isPlaying) {
       stateRef.current.dancing = true;
+      stateRef.current.sleep = false; // Wake her up!
+      
+      // Ensure she has enough space on the left for her moonwalk!
+      const isMobile = window.innerWidth < 768;
+      const safeLeftSpace = isMobile ? 110 : 180; // 90px + 20px padding on mobile, 150px + 30px on desktop
+      if (stateRef.current.x < safeLeftSpace) {
+        stateRef.current.x = safeLeftSpace;
+      }
+
       // 10% chance to show a music bubble when it starts playing
       if (Math.random() < 0.1 && !stateRef.current.bubbleShown) {
         say(['♪', '♫', '♬', '💃', '🕺'][Math.floor(Math.random() * 5)], 1500);
@@ -240,9 +249,13 @@ const CuteCat: React.FC = () => {
         pRect = playground.getBoundingClientRect();
       }
 
+      const isMobile = window.innerWidth < 768;
+      const marginX = isMobile ? 30 : 50;
+      const roamYOffset = isMobile ? 130 : 90;
+
       while (!valid && attempts < 15) {
-        targetX = rand(50, document.documentElement.clientWidth - 50);
-        targetY = window.innerHeight - 90; // Fixed Y position for horizontal roaming
+        targetX = rand(marginX, document.documentElement.clientWidth - marginX);
+        targetY = window.innerHeight - roamYOffset; // Fixed Y position for horizontal roaming
         valid = true;
         
         if (pRect) {
@@ -263,6 +276,8 @@ const CuteCat: React.FC = () => {
     const loop = () => {
       const t = now();
       const s = stateRef.current;
+      const isMobile = window.innerWidth < 768;
+      const roamYOffset = isMobile ? 130 : 90;
 
       // Logic for regular follow mode
       if (!s.menuShown && s.navState === 'none') {
@@ -278,7 +293,7 @@ const CuteCat: React.FC = () => {
       }
 
       if (s.mode === 'roam' && s.navState === 'none') {
-        s.ty = window.innerHeight - 90 + window.scrollY;
+        s.ty = window.innerHeight - roamYOffset + window.scrollY;
       }
       
       // Convert global y target to fixed screen space for animation
@@ -405,8 +420,15 @@ const CuteCat: React.FC = () => {
     const schedule = () => {
       setTimeout(() => {
         if (!document.hidden && !stateRef.current.bubbleShown && stateRef.current.navState === 'none') {
-          const pool = stateRef.current.sleep ? SLEEPY : THOUGHTS;
-          say(pool[Math.floor(Math.random() * pool.length)], 3200);
+          if (stateRef.current.dancing) {
+            // Only show music notes occasionally while dancing
+            if (Math.random() < 0.3) {
+              say(['♪', '♫', '♬', '💃', '🕺'][Math.floor(Math.random() * 5)], 2000);
+            }
+          } else {
+            const pool = stateRef.current.sleep ? SLEEPY : THOUGHTS;
+            say(pool[Math.floor(Math.random() * pool.length)], 3200);
+          }
         }
         schedule();
       }, rand(7000, 13000));
@@ -458,6 +480,24 @@ const CuteCat: React.FC = () => {
           90% { transform: translateX(-25px) translateY(-10px); }
           98%, 100% { transform: translateX(0) translateY(0); }
         }
+        @media (max-width: 768px) {
+          @keyframes dance-step {
+            0% { transform: translateX(0) translateY(0); }
+            8% { transform: translateX(-15px) translateY(-10px); }
+            16% { transform: translateX(-30px) translateY(0); }
+            24% { transform: translateX(-45px) translateY(-10px); }
+            32% { transform: translateX(-60px) translateY(0); }
+            40% { transform: translateX(-75px) translateY(-10px); }
+            48% { transform: translateX(-90px) translateY(0); }
+            50% { transform: translateX(-90px) translateY(0); }
+            58% { transform: translateX(-75px) translateY(-10px); }
+            66% { transform: translateX(-60px) translateY(0); }
+            74% { transform: translateX(-45px) translateY(-10px); }
+            82% { transform: translateX(-30px) translateY(0); }
+            90% { transform: translateX(-15px) translateY(-10px); }
+            98%, 100% { transform: translateX(0) translateY(0); }
+          }
+        }
         .cat-dancing-1 .cat-tail, .cat-dancing-2 .cat-tail, .cat-dancing-3 .cat-tail { animation: tail-dance 0.45s ease-in-out infinite !important; }
         @keyframes tail-dance { 0%, 100% { transform: rotate(40deg) } 50% { transform: rotate(-40deg) } }
         .cat-dancing-1 .cat-eyes-dance, .cat-dancing-2 .cat-eyes-dance, .cat-dancing-3 .cat-eyes-dance { animation: eyes-dance 0.9s ease-in-out infinite !important; }
@@ -493,8 +533,8 @@ const CuteCat: React.FC = () => {
         onClick={handleCatClick}
         onMouseEnter={() => stateRef.current.isHovered = true}
         onMouseLeave={() => stateRef.current.isHovered = false}
-        className="fixed z-[100] cursor-pointer drop-shadow-lg"
-        style={{ left: catState.x, top: catState.y, transform: 'translate(-50%, -50%)', width: '96px', height: '96px', willChange: 'transform, left, top' }}
+        className="fixed z-[100] cursor-pointer drop-shadow-lg w-16 h-16 md:w-24 md:h-24"
+        style={{ left: catState.x, top: catState.y, transform: 'translate(-50%, -50%)', willChange: 'transform, left, top' }}
         title="pet me"
       >
         <div className={`${catState.bob ? 'cat-bob' : ''} ${catState.dancePhase === 1 ? 'cat-dancing-1' : catState.dancePhase === 2 ? 'cat-dancing-2' : catState.dancePhase === 3 ? 'cat-dancing-3' : ''}`} style={{ width: '100%', height: '100%' }}>

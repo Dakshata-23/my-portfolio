@@ -25,7 +25,7 @@ const MusicPlayer: React.FC = () => {
   }, [volume]);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-3 bg-white/80 dark:bg-[#1a1a24]/90 backdrop-blur-md border border-gray-200 dark:border-white/10 p-3 rounded-2xl shadow-xl">
+    <div className="fixed top-6 md:top-auto bottom-auto md:bottom-6 left-6 z-50 flex items-center gap-3 bg-white/80 dark:bg-[#1a1a24]/90 backdrop-blur-md border border-gray-200 dark:border-white/10 p-3 rounded-2xl shadow-xl">
       <button 
         onClick={togglePlay}
         className="w-10 h-10 flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition-colors shadow-sm"
