@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
+import confetti from 'canvas-confetti';
 import { ThemeContext, MusicContext } from '../App';
 import MEOW_SRC from '../assets/sound_garage-cat-meow-8-fx-306184.mp3';
 
@@ -80,11 +81,20 @@ const CuteCat: React.FC = () => {
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
   const now = () => performance.now();
 
+  const meowAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    meowAudioRef.current = new Audio(MEOW_SRC);
+    meowAudioRef.current.volume = 0.75;
+  }, []);
+
   const playMeow = (forcePlay = false) => {
     try {
-      const a = new Audio(MEOW_SRC);
-      a.volume = 0.75;
-      a.play();
+      if (meowAudioRef.current) {
+        const clone = meowAudioRef.current.cloneNode() as HTMLAudioElement;
+        clone.volume = 0.75;
+        clone.play();
+      }
     } catch (e) { }
   };
 
@@ -145,30 +155,34 @@ const CuteCat: React.FC = () => {
     const elem = document.getElementById(targetId);
     if (!elem) return;
 
-    // Close menu, start following sequence
+    // Close menu
     stateRef.current.menuShown = false;
     stateRef.current.bubbleShown = true;
-    stateRef.current.navState = 'following';
+    stateRef.current.navState = 'none'; // Ensure she doesn't follow cursor
 
     setCatState(prev => ({
       ...prev,
       showMenu: false,
       showBubble: true,
-      bubbleText: 'follow me!'
+      bubbleText: 'Here we go! 🚀'
     }));
 
     playMeow(true);
     addFloatingElement('heart', '🚀', stateRef.current.x - 6, stateRef.current.y - 30);
 
-    // Set cat target to the section
-    const rect = elem.getBoundingClientRect();
-    stateRef.current.mode = 'follow';
-    stateRef.current.tx = window.innerWidth / 2;
-    stateRef.current.ty = rect.top + window.scrollY + 100;
-    stateRef.current.modeUntil = now() + 10000; // lots of time to follow
+    // Stay in roam mode so she doesn't follow the cursor
+    stateRef.current.mode = 'roam';
+    stateRef.current.modeUntil = now() - 1000; 
 
-    // Scroll there
-    elem.scrollIntoView({ behavior: 'smooth' });
+    // Scroll there with an offset so it doesn't touch the very top edge
+    const yOffset = elem.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top: yOffset, behavior: 'smooth' });
+    
+    // Hide bubble shortly after
+    setTimeout(() => {
+      stateRef.current.bubbleShown = false;
+      setCatState(prev => ({ ...prev, showBubble: false }));
+    }, 2500);
   };
 
   useEffect(() => {
@@ -251,7 +265,7 @@ const CuteCat: React.FC = () => {
 
       const isMobile = window.innerWidth < 768;
       const marginX = isMobile ? 30 : 50;
-      const roamYOffset = isMobile ? 130 : 90;
+      const roamYOffset = isMobile ? 130 : 220; // 220 pushes her much higher above the desktop menu
 
       while (!valid && attempts < 15) {
         targetX = rand(marginX, document.documentElement.clientWidth - marginX);
@@ -396,6 +410,7 @@ const CuteCat: React.FC = () => {
         flip,
         bob,
         sleep: s.sleep,
+        happy: s.happy,
         blink: prev.blink || blink,
         eyeOffsetX,
         eyeOffsetY,
@@ -434,6 +449,36 @@ const CuteCat: React.FC = () => {
       }, rand(7000, 13000));
     };
     schedule();
+  }, []);
+  // Welcome message on mount (Only once per session)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const hasWelcomed = sessionStorage.getItem('cat_welcomed');
+      if (!stateRef.current.bubbleShown && !hasWelcomed) {
+        sessionStorage.setItem('cat_welcomed', 'true');
+        
+        stateRef.current.happy = true;
+        say("Welcome to my portfolio! 👋", 5000);
+        
+        playMeow(true); // Meow!
+        
+        // Fire confetti originating from the cat
+        const xPerc = stateRef.current.x / window.innerWidth;
+        const yPerc = stateRef.current.y / window.innerHeight;
+        
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { x: xPerc, y: yPerc },
+          colors: ['#E6E6FA', '#D8BFD8', '#FFB6C1', '#87CEEB'] // Pastel cute colors
+        });
+        
+        setTimeout(() => {
+          stateRef.current.happy = false;
+        }, 5000);
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
