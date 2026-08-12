@@ -2,8 +2,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { PROFILE_DATA } from '../constants';
 
+import SkillShowcaseModal from './SkillShowcaseModal';
+
 // --- MAGNETIC PILL COMPONENT ---
-const MagneticPill: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const MagneticPill: React.FC<{ children: React.ReactNode; onClick?: () => void }> = ({ children, onClick }) => {
   const ref = useRef<HTMLDivElement>(null);
   
   // Physics values for X and Y movement
@@ -41,6 +43,7 @@ const MagneticPill: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       ref={ref}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
+      onClick={onClick}
       style={{ x: springX, y: springY }}
       whileHover={{ scale: 1.1, backgroundColor: 'var(--textPrimary)', color: 'var(--background)' }}
       className="px-4 py-2 bg-accent/30 text-textSecondary text-sm font-medium rounded-full border border-accent transition-colors cursor-pointer select-none shadow-sm relative z-20"
@@ -51,7 +54,7 @@ const MagneticPill: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 };
 
 // --- SPOTLIGHT CARD COMPONENT ---
-const SpotlightCard: React.FC<{ title: string; skills: string[] }> = ({ title, skills }) => {
+const SpotlightCard: React.FC<{ title: string; skills: string[]; onSkillClick: (skill: string) => void }> = ({ title, skills, onSkillClick }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -120,7 +123,7 @@ const SpotlightCard: React.FC<{ title: string; skills: string[] }> = ({ title, s
         </h3>
         <div className="flex flex-wrap gap-3">
           {skills.map((skill) => (
-            <MagneticPill key={skill}>
+            <MagneticPill key={skill} onClick={() => onSkillClick(skill)}>
               {skill}
             </MagneticPill>
           ))}
@@ -132,8 +135,10 @@ const SpotlightCard: React.FC<{ title: string; skills: string[] }> = ({ title, s
 
 // --- MAIN SKILLS COMPONENT ---
 const Skills: React.FC = () => {
+  const [selectedSkill, setSelectedSkill] = useState<string | null>(null);
+
   return (
-    <section id="skills" className="mb-24 mt-8">
+    <section id="skills" className="mb-24 mt-8 relative">
       <div className="flex flex-col items-center mb-12 text-center">
         <h2 className="text-3xl font-bold mb-4 text-textPrimary tracking-tight">
           Skills & Expertise
@@ -143,11 +148,14 @@ const Skills: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
         {Object.entries(PROFILE_DATA.skillCategories).map(([category, skills]) => (
-          <SpotlightCard key={category} title={category} skills={skills} />
+          <SpotlightCard key={category} title={category} skills={skills} onSkillClick={setSelectedSkill} />
         ))}
       </div>
+
+      {/* Skill Interactive Modal */}
+      <SkillShowcaseModal skill={selectedSkill} onClose={() => setSelectedSkill(null)} />
     </section>
   );
 };
