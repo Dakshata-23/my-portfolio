@@ -18,6 +18,12 @@ const MusicPlayer: React.FC = () => {
     }
   };
 
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -50,11 +56,13 @@ const MusicPlayer: React.FC = () => {
         className="w-16 ml-2 accent-indigo-500 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
       />
 
-      <audio 
-        ref={audioRef}
-        src={LOFI_SRC}
-        loop
-      />
+      {mounted && (
+        <audio 
+          ref={audioRef}
+          src={LOFI_SRC}
+          loop
+        />
+      )}
     </div>
   );
 };
