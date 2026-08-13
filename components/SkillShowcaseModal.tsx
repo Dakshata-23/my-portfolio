@@ -110,7 +110,7 @@ const NodeDemo = () => {
         {step >= 1 && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} onAnimationComplete={() => setStep(2)}>
             <br/>
-            <span className="text-green-400">dakshata@portfolio</span><span className="text-white">:</span><span className="text-blue-400">~/server</span><span className="text-white">$</span> <TypewriterText text="curl http://localhost:3000/api/status" delay={1500} onComplete={() => setStep(3)} />
+            <span className="text-green-400">dakshata@portfolio</span><span className="text-white">:</span><span className="text-blue-400">~/server</span><span className="text-white">$</span> <TypewriterText text="curl /api/status" delay={1500} onComplete={() => setStep(3)} />
           </motion.div>
         )}
         {step >= 3 && (
