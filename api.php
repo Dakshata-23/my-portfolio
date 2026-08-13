@@ -44,7 +44,7 @@ $endpoint = $input['endpoint'];
 $data = $input['data'];
 
 // Load API key
-$apiKey = "AIzaSyD3VI21sIQx-er0uFVJpC1hwvFmGYFHFbQ";
+$apiKey = getenv('GOOGLE_API_KEY') ?: "YOUR_API_KEY_HERE";
 if (!$apiKey) {
     http_response_code(500);
     echo json_encode(['error' => 'API key not configured.']);
