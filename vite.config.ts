@@ -22,6 +22,11 @@ export default defineConfig(({ mode }) => {
           },
           server: {
             port: 3000
+          },
+          postProcess(renderedRoute) {
+            // Remove absolute localhost URLs injected by Puppeteer during prerender
+            renderedRoute.html = renderedRoute.html.replace(/http:\/\/127\.0\.0\.1:3000/g, '');
+            renderedRoute.html = renderedRoute.html.replace(/http:\/\/localhost:3000/g, '');
           }
         })
       ],
