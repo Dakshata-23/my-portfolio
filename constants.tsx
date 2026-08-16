@@ -6,7 +6,7 @@ export const PROFILE_DATA = {
   role: "Full-Stack Developer",
   experience: "2 Year 3 Months",
   location: "Pune, INDIA",
-  email: "dakshata2316@gmail.com",
+  email: "dakshatashukla96@gmail.com",
   phone: "9767947281",
   linkedin: "https://www.linkedin.com/in/dakshata-shukla/",
   website: "https://dakshatashukla.in/",
