@@ -20,25 +20,21 @@ export const emptyLineItem = (id: string) => ({
   rate: 0,
 });
 
-export const createEmptyInvoice = (): InvoiceData => {
-  const today = new Date();
-  const due = new Date(today);
-  due.setDate(due.getDate() + 14);
-  const fmt = (d: Date) => d.toISOString().split('T')[0];
-
-  return {
-    fromName: '',
-    fromAddress: '',
-    fromEmail: '',
-    billToName: '',
-    billToAddress: '',
-    billToEmail: '',
-    invoiceNumber: `INV-${Math.floor(1000 + Math.random() * 9000)}`,
-    issueDate: fmt(today),
-    dueDate: fmt(due),
-    items: [emptyLineItem('1')],
-    taxRate: 0,
-    notes: '',
-    currency: 'USD',
-  };
-};
+// Deliberately static (no Date.now()/Math.random()) — this form is prerendered as a
+// static page, and a non-deterministic default would mismatch on hydration (React #418)
+// since the prerendered snapshot and the visitor's client render would compute different values.
+export const createEmptyInvoice = (): InvoiceData => ({
+  fromName: '',
+  fromAddress: '',
+  fromEmail: '',
+  billToName: '',
+  billToAddress: '',
+  billToEmail: '',
+  invoiceNumber: '',
+  issueDate: '',
+  dueDate: '',
+  items: [emptyLineItem('1')],
+  taxRate: 0,
+  notes: '',
+  currency: 'USD',
+});

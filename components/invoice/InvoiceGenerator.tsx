@@ -46,16 +46,7 @@ const InvoiceGenerator: React.FC = () => {
   const TemplateComponent = INVOICE_TEMPLATES[template];
 
   return (
-    <section id="invoice-generator" className="mb-24">
-      <div className="flex flex-col items-center mb-12 text-center">
-        <h2 className="text-3xl font-bold mb-4 text-textPrimary tracking-tight">
-          Free Invoice Generator
-        </h2>
-        <p className="text-textSecondary max-w-xl text-sm">
-          Fill in your details, pick a template, and download a ready-to-send PDF invoice. Nothing is stored or sent anywhere — it's all generated right here in your browser.
-        </p>
-      </div>
-
+    <div>
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Form */}
         <div className="lg:col-span-3 p-6 rounded-2xl glass border border-accent shadow-sm space-y-6">
@@ -81,7 +72,7 @@ const InvoiceGenerator: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
               <p className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-2">Invoice #</p>
-              <input className={inputClass} value={data.invoiceNumber} onChange={(e) => updateField('invoiceNumber', e.target.value)} />
+              <input className={inputClass} placeholder="INV-0001" value={data.invoiceNumber} onChange={(e) => updateField('invoiceNumber', e.target.value)} />
             </div>
             <div>
               <p className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-2">Currency</p>
@@ -240,7 +231,7 @@ const InvoiceGenerator: React.FC = () => {
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

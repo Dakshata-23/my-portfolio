@@ -14,9 +14,10 @@ const app = (
   </React.StrictMode>
 );
 
-if (rootElement.hasChildNodes()) {
-  ReactDOM.hydrateRoot(rootElement, app);
-} else {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(app);
-}
+// Prerendered HTML exists purely for crawlers/direct-link static serving, not for
+// hydration: several components (lazy-loaded routes, viewport-dependent animations)
+// are non-deterministic between the prerender snapshot and a fresh client render, which
+// makes hydrateRoot() throw mismatch errors. A plain client render replaces that
+// snapshot outright and is what we want here either way.
+const root = ReactDOM.createRoot(rootElement);
+root.render(app);

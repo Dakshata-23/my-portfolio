@@ -5,7 +5,7 @@ import prerender from '@prerenderer/rollup-plugin';
 
 export default defineConfig(() => {
     return {
-      base: './',
+      base: '/',
       server: {
         port: 3000,
         host: '0.0.0.0',
@@ -13,7 +13,7 @@ export default defineConfig(() => {
       plugins: [
         react(),
         prerender({
-          routes: ['/'],
+          routes: ['/', '/tools', '/tools/invoice-generator'],
           renderer: '@prerenderer/renderer-puppeteer',
           rendererOptions: {
             renderAfterTime: 5000,
