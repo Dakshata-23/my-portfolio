@@ -49,26 +49,40 @@ const Header: React.FC = () => {
         transition={{ duration: 0.5, delay: 0.5 }}
         className="glass rounded-2xl px-4 py-3 flex items-center gap-2 md:gap-4 pointer-events-auto shadow-lg shadow-black/5"
       >
-        {navLinks.map((link) => (
-          <motion.a
-            key={link.name}
-            href={link.route || `/#${link.hash}`}
-            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleLinkClick(e, link)}
-            whileHover={{ scale: 1.2, y: -4 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className="group flex flex-col items-center justify-center w-12 h-12 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
-            aria-label={link.name}
-          >
-            <svg className="w-5 h-5 text-gray-500 group-hover:text-black dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={link.icon}></path>
-            </svg>
-            {/* Tooltip */}
-            <span className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-[10px] py-1 px-2 rounded font-medium whitespace-nowrap pointer-events-none">
-              {link.name}
-            </span>
-          </motion.a>
-        ))}
+        {navLinks.map((link) => {
+          const isActive = !!link.route && location.pathname.startsWith(link.route);
+          return (
+            <motion.a
+              key={link.name}
+              href={link.route || `/#${link.hash}`}
+              onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleLinkClick(e, link)}
+              whileHover={{ scale: 1.2, y: -4 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              className={`group flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-colors relative ${
+                isActive ? 'bg-gray-100 dark:bg-gray-800' : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+              aria-label={link.name}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <svg
+                className={`w-5 h-5 transition-colors ${
+                  isActive ? 'text-black dark:text-white' : 'text-gray-500 group-hover:text-black dark:group-hover:text-white'
+                }`}
+                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={link.icon}></path>
+              </svg>
+              {isActive && (
+                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-black dark:bg-white"></span>
+              )}
+              {/* Tooltip */}
+              <span className="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white text-[10px] py-1 px-2 rounded font-medium whitespace-nowrap pointer-events-none">
+                {link.name}
+              </span>
+            </motion.a>
+          );
+        })}
 
         {/* Divider */}
         <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-1"></div>
