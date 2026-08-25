@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext, lazy, Suspense } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Skills from './components/Skills';
@@ -12,6 +12,8 @@ import CustomCursor from './components/CustomCursor';
 import { EXPERIENCES, PROFILE_DATA } from './constants';
 import { Project } from './types';
 import MusicPlayer from './components/MusicPlayer';
+
+const InvoiceGenerator = lazy(() => import('./components/invoice/InvoiceGenerator'));
 
 // Theme Context
 export const ThemeContext = createContext<{
@@ -124,6 +126,12 @@ const App: React.FC = () => {
           <div className="h-px bg-gray-200 dark:bg-gray-800 my-16 transition-colors"></div>
 
           <Projects onViewCaseStudy={handleViewCaseStudy} />
+
+          <div className="h-px bg-gray-200 dark:bg-gray-800 my-16 transition-colors"></div>
+
+          <Suspense fallback={<div className="text-center text-textSecondary text-sm py-24">Loading invoice generator…</div>}>
+            <InvoiceGenerator />
+          </Suspense>
         </main>
 
           <Footer />

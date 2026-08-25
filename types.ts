@@ -22,7 +22,27 @@ export interface Experience {
   bullets: string[];
 }
 
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
+export interface InvoiceLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  rate: number;
 }
+
+export interface InvoiceData {
+  fromName: string;
+  fromAddress: string;
+  fromEmail: string;
+  billToName: string;
+  billToAddress: string;
+  billToEmail: string;
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate: string;
+  items: InvoiceLineItem[];
+  taxRate: number;
+  notes: string;
+  currency: string;
+}
+
+export type InvoiceTemplateId = 'minimal' | 'modern' | 'classic';
