@@ -47,6 +47,37 @@ const InvoiceGenerator: React.FC = () => {
 
   return (
     <div>
+      <div className="mb-8">
+        <p className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-3">Choose a template</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {TEMPLATE_OPTIONS.map((opt) => {
+            const selected = template === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setTemplate(opt.id)}
+                className={`text-left rounded-2xl border-2 overflow-hidden transition-colors bg-surface ${
+                  selected ? 'border-textPrimary shadow-md' : 'border-accent hover:border-textSecondary/40'
+                }`}
+              >
+                <div className="relative aspect-[4/3] bg-white overflow-hidden">
+                  <img src={opt.preview} alt={`${opt.name} invoice template preview`} className="w-full h-full object-cover object-top" />
+                  {selected && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-textPrimary text-background flex items-center justify-center shadow-md">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <span className="block text-sm font-medium text-textPrimary">{opt.name}</span>
+                  <span className="block text-xs text-textSecondary mt-0.5">{opt.description}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Form */}
         <div className="lg:col-span-3 p-6 rounded-2xl glass border border-accent shadow-sm space-y-6">
@@ -160,28 +191,8 @@ const InvoiceGenerator: React.FC = () => {
           </div>
         </div>
 
-        {/* Template picker + summary + download */}
+        {/* Summary + download */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="p-6 rounded-2xl glass border border-accent shadow-sm">
-            <p className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-3">Template</p>
-            <div className="space-y-2">
-              {TEMPLATE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => setTemplate(opt.id)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
-                    template === opt.id
-                      ? 'border-textPrimary bg-accent/40'
-                      : 'border-accent hover:bg-accent/20'
-                  }`}
-                >
-                  <span className="block text-sm font-medium text-textPrimary">{opt.name}</span>
-                  <span className="block text-xs text-textSecondary mt-0.5">{opt.description}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="p-6 rounded-2xl glass border border-accent shadow-sm">
             <div className="space-y-2 text-sm mb-4">
               <div className="flex justify-between text-textSecondary">
