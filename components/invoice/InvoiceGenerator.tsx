@@ -13,7 +13,7 @@ const inputClass =
 const InvoiceGenerator: React.FC = () => {
   const [data, setData] = useState<InvoiceData>(createEmptyInvoice());
   const [template, setTemplate] = useState<InvoiceTemplateId>('minimal');
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
   const { subtotal, taxAmount, total } = useMemo(() => calculateTotals(data), [data]);
 
@@ -61,8 +61,8 @@ const InvoiceGenerator: React.FC = () => {
                   selected ? 'border-textPrimary shadow-md' : 'border-accent hover:border-textSecondary/40'
                 }`}
               >
-                <div className="relative aspect-[4/3] bg-white overflow-hidden">
-                  <img src={opt.preview} alt={`${opt.name} invoice template preview`} className="w-full h-full object-cover object-top" />
+                <div className="relative aspect-[1309/620] bg-white overflow-hidden">
+                  <img src={opt.preview} alt={`${opt.name} invoice template preview`} className="w-full h-full object-cover" />
                   {selected && (
                     <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-textPrimary text-background flex items-center justify-center shadow-md">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
