@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { InvoiceData, InvoiceTemplateId } from '../../types';
 import { calculateTotals, createEmptyInvoice, emptyLineItem, formatCurrency } from './invoiceUtils';
 import { INVOICE_TEMPLATES, TEMPLATE_OPTIONS } from './templates';
+import InvoicePreview from './InvoicePreview';
 
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR'];
 
@@ -234,10 +235,8 @@ const InvoiceGenerator: React.FC = () => {
           </div>
 
           {showPreview && (
-            <div className="hidden md:block rounded-2xl overflow-hidden border border-accent shadow-sm h-[500px]">
-              <PDFViewer width="100%" height="100%" showToolbar={false}>
-                <TemplateComponent data={data} />
-              </PDFViewer>
+            <div className="hidden md:block rounded-2xl overflow-hidden border border-accent shadow-sm h-[570px]">
+              <InvoicePreview document={<TemplateComponent data={data} />} data={data} template={template} />
             </div>
           )}
         </div>
