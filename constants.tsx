@@ -9,6 +9,7 @@ export const PROFILE_DATA = {
   email: "dakshatashukla96@gmail.com",
   phone: "9767947281",
   linkedin: "https://www.linkedin.com/in/dakshata-shukla/",
+  github: "https://github.com/Dakshata-23",
   website: "https://dakshatashukla.in/",
   summary: "I’m a Full-Stack Developer who loves turning 'this should be simple' into software that actually is. I take the parts everyone avoids (auth, billing, background jobs, and deployments) and make them boring on purpose. If it runs at 2 AM and nobody notices, I’m doing something right.",
   skillCategories: {

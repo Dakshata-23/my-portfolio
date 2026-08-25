@@ -22,8 +22,8 @@ const Footer: React.FC = () => {
           <a href={PROFILE_DATA.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-textPrimary transition-colors text-sm font-medium">
             LinkedIn
           </a>
-          <a href={PROFILE_DATA.website} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-textPrimary transition-colors text-sm font-medium">
-            Twitter
+          <a href={PROFILE_DATA.github} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-textPrimary transition-colors text-sm font-medium">
+            GitHub
           </a>
         </div>
       </div>
