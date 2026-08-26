@@ -8,6 +8,7 @@ import MusicPlayer from './components/MusicPlayer';
 import HomePage from './pages/HomePage';
 import ToolsPage from './pages/ToolsPage';
 import JwtDecoderPage from './pages/JwtDecoderPage';
+import CronParserPage from './pages/CronParserPage';
 import ComponentsPage from './pages/ComponentsPage';
 import ButtonsPage from './pages/ButtonsPage';
 
@@ -71,6 +72,7 @@ const App: React.FC = () => {
                 }
               />
               <Route path="/tools/jwt-decoder" element={<JwtDecoderPage />} />
+              <Route path="/tools/cron-parser" element={<CronParserPage />} />
               <Route path="/components" element={<ComponentsPage />} />
               <Route path="/components/buttons" element={<ButtonsPage />} />
             </Routes>

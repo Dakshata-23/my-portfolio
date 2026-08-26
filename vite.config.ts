@@ -13,7 +13,7 @@ export default defineConfig(() => {
       plugins: [
         react(),
         prerender({
-          routes: ['/', '/tools', '/tools/invoice-generator', '/tools/jwt-decoder', '/components', '/components/buttons'],
+          routes: ['/', '/tools', '/tools/invoice-generator', '/tools/jwt-decoder', '/tools/cron-parser', '/components', '/components/buttons'],
           renderer: '@prerenderer/renderer-puppeteer',
           rendererOptions: {
             renderAfterTime: 5000,
