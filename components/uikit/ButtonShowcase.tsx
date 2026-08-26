@@ -150,21 +150,26 @@ const LoadingButton = ({ children, onClick }) => {
   },
   {
     name: 'Runaway Button',
-    description: "Dodges the cursor every time you get close. It gives up after a few tries — try to catch it.",
+    description: 'Dodges the cursor every time you get close. Genuinely unclickable — the taunt changes the longer you try.',
     preview: <RunawayButton />,
     wide: true,
     code: `import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti'; // npm install canvas-confetti
 
-const DODGES_TO_CATCH = 6;
+const TAUNTS = [
+  'Click me if you can',
+  'Nice try 😏',
+  'So close!',
+  'Not happening',
+  'Still trying? 😂',
+  "You'll never catch me",
+];
 
 const RunawayButton = () => {
   const containerRef = useRef(null);
   const btnRef = useRef(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [dodges, setDodges] = useState(0);
-  const [caught, setCaught] = useState(false);
+  const [attempts, setAttempts] = useState(0);
 
   const dodge = () => {
     const containerRect = containerRef.current.getBoundingClientRect();
@@ -173,34 +178,22 @@ const RunawayButton = () => {
     const maxY = Math.max(containerRect.height - btnRect.height, 0);
 
     setPos({ x: Math.random() * maxX, y: Math.random() * maxY });
-    setDodges((prev) => {
-      const next = prev + 1;
-      if (next >= DODGES_TO_CATCH) setCaught(true);
-      return next;
-    });
+    setAttempts((prev) => prev + 1);
   };
 
-  const handleInteraction = () => {
-    if (caught) {
-      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-      return;
-    }
-    dodge();
-  };
+  const taunt = TAUNTS[Math.min(attempts, TAUNTS.length - 1)];
 
   return (
     <div ref={containerRef} className="relative w-full h-48">
       <motion.button
         ref={btnRef}
-        onMouseEnter={handleInteraction}
-        onClick={handleInteraction}
-        animate={{ x: pos.x, y: pos.y, scale: caught ? [1, 1.15, 1] : 1 }}
+        onMouseEnter={dodge}
+        onClick={dodge}
+        animate={{ x: pos.x, y: pos.y }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className={\`absolute top-0 left-0 px-6 py-3 rounded-full font-medium text-white shadow-lg \${
-          caught ? 'bg-green-500' : 'bg-red-500'
-        }\`}
+        className="absolute top-0 left-0 px-6 py-3 rounded-full bg-red-500 text-white font-medium shadow-lg"
       >
-        {caught ? 'Fine, you got me 🎉' : 'Click me if you can'}
+        {taunt}
       </motion.button>
     </div>
   );
