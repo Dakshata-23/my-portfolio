@@ -7,6 +7,7 @@ import CustomCursor from './components/CustomCursor';
 import MusicPlayer from './components/MusicPlayer';
 import HomePage from './pages/HomePage';
 import ToolsPage from './pages/ToolsPage';
+import JwtDecoderPage from './pages/JwtDecoderPage';
 
 const InvoiceGeneratorPage = lazy(() => import('./pages/InvoiceGeneratorPage'));
 
@@ -67,6 +68,7 @@ const App: React.FC = () => {
                   </Suspense>
                 }
               />
+              <Route path="/tools/jwt-decoder" element={<JwtDecoderPage />} />
             </Routes>
           </div>
           <CuteCat />
