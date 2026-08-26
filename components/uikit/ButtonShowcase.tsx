@@ -4,6 +4,7 @@ import GradientButton from './buttons/GradientButton';
 import GlassButton from './buttons/GlassButton';
 import LoadingButton from './buttons/LoadingButton';
 import OutlineIconButton from './buttons/OutlineIconButton';
+import RunawayButton from './buttons/RunawayButton';
 import CodeBlock from './CodeBlock';
 
 interface Entry {
@@ -11,6 +12,7 @@ interface Entry {
   description: string;
   preview: React.ReactNode;
   code: string;
+  wide?: boolean;
 }
 
 const ENTRIES: Entry[] = [
@@ -146,15 +148,77 @@ const LoadingButton = ({ children, onClick }) => {
   </button>
 );`,
   },
+  {
+    name: 'Runaway Button',
+    description: "Dodges the cursor every time you get close. It gives up after a few tries — try to catch it.",
+    preview: <RunawayButton />,
+    wide: true,
+    code: `import { useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti'; // npm install canvas-confetti
+
+const DODGES_TO_CATCH = 6;
+
+const RunawayButton = () => {
+  const containerRef = useRef(null);
+  const btnRef = useRef(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [dodges, setDodges] = useState(0);
+  const [caught, setCaught] = useState(false);
+
+  const dodge = () => {
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const btnRect = btnRef.current.getBoundingClientRect();
+    const maxX = Math.max(containerRect.width - btnRect.width, 0);
+    const maxY = Math.max(containerRect.height - btnRect.height, 0);
+
+    setPos({ x: Math.random() * maxX, y: Math.random() * maxY });
+    setDodges((prev) => {
+      const next = prev + 1;
+      if (next >= DODGES_TO_CATCH) setCaught(true);
+      return next;
+    });
+  };
+
+  const handleInteraction = () => {
+    if (caught) {
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      return;
+    }
+    dodge();
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full h-48">
+      <motion.button
+        ref={btnRef}
+        onMouseEnter={handleInteraction}
+        onClick={handleInteraction}
+        animate={{ x: pos.x, y: pos.y, scale: caught ? [1, 1.15, 1] : 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        className={\`absolute top-0 left-0 px-6 py-3 rounded-full font-medium text-white shadow-lg \${
+          caught ? 'bg-green-500' : 'bg-red-500'
+        }\`}
+      >
+        {caught ? 'Fine, you got me 🎉' : 'Click me if you can'}
+      </motion.button>
+    </div>
+  );
+};`,
+  },
 ];
 
 const ButtonShowcase: React.FC = () => (
   <div className="space-y-8">
     {ENTRIES.map((entry) => (
       <div key={entry.name} className="rounded-2xl glass border border-accent shadow-sm overflow-hidden">
-        <div className="relative p-8 md:p-12 flex items-center justify-center min-h-[160px] overflow-hidden bg-accent/20">
+        <div
+          className={`relative p-8 md:p-12 flex items-center justify-center overflow-hidden bg-accent/20 ${
+            entry.wide ? 'min-h-[240px]' : 'min-h-[160px]'
+          }`}
+        >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(99,102,241,0.18),transparent_55%),radial-gradient(circle_at_75%_80%,rgba(236,72,153,0.18),transparent_55%)]" />
-          <div className="relative">{entry.preview}</div>
+          <div className={`relative ${entry.wide ? 'w-full' : ''}`}>{entry.preview}</div>
         </div>
         <div className="p-6 border-t border-accent">
           <h3 className="text-base font-bold text-textPrimary mb-1">{entry.name}</h3>
