@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { PROFILE_DATA } from '../constants';
 import ScrambleText from './ScrambleText';
-import RESUME_SRC from '../assets/resume.pdf';
 
 const Hero: React.FC = () => {
   return (
@@ -69,9 +68,6 @@ const Hero: React.FC = () => {
         >
           <a href="#experience" className="px-8 py-3 rounded-full bg-textPrimary text-background font-medium hover:scale-105 transition-transform shadow-lg">
             View Work
-          </a>
-          <a href={RESUME_SRC} download target="_blank" rel="noopener noreferrer" className="px-8 py-3 rounded-full border border-accent bg-accent/30 text-textPrimary font-medium hover:bg-accent/50 transition-colors">
-            Resume
           </a>
           <a href={`mailto:${PROFILE_DATA.email}`} className="px-8 py-3 rounded-full border border-accent bg-accent/30 text-textPrimary font-medium hover:bg-accent/50 transition-colors">
             Connect
