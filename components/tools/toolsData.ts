@@ -15,13 +15,6 @@ export const TOOLS: ToolMeta[] = [
     status: 'live',
   },
   {
-    slug: 'url-shortener',
-    name: 'URL Shortener',
-    description: 'Paste a long link, get a short one back.',
-    icon: 'M13.828 10.172a4 4 0 010 5.656l-3 3a4 4 0 01-5.656-5.656l1.5-1.5M10.172 13.828a4 4 0 010-5.656l3-3a4 4 0 015.656 5.656l-1.5 1.5',
-    status: 'coming-soon',
-  },
-  {
     slug: 'jwt-decoder',
     name: 'JWT Decoder',
     description: 'Paste a token, see the decoded header & payload instantly, entirely client-side.',
@@ -29,10 +22,17 @@ export const TOOLS: ToolMeta[] = [
     status: 'live',
   },
   {
-    slug: 'uptime-checker',
-    name: 'Uptime Checker',
-    description: 'Enter a URL and check whether it is up right now.',
-    icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+    slug: 'cron-parser',
+    name: 'Cron Expression Parser',
+    description: 'Paste a cron expression, get a plain-English description and the next few run times.',
+    icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+    status: 'coming-soon',
+  },
+  {
+    slug: 'json-formatter',
+    name: 'JSON Formatter',
+    description: 'Paste JSON, get it pretty-printed and validated with clear error messages.',
+    icon: 'M10 20l4-16m4 4l4 4-4 4M6 8l-4 4 4 4',
     status: 'coming-soon',
   },
 ];

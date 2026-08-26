@@ -8,6 +8,8 @@ import MusicPlayer from './components/MusicPlayer';
 import HomePage from './pages/HomePage';
 import ToolsPage from './pages/ToolsPage';
 import JwtDecoderPage from './pages/JwtDecoderPage';
+import ComponentsPage from './pages/ComponentsPage';
+import ButtonsPage from './pages/ButtonsPage';
 
 const InvoiceGeneratorPage = lazy(() => import('./pages/InvoiceGeneratorPage'));
 
@@ -69,6 +71,8 @@ const App: React.FC = () => {
                 }
               />
               <Route path="/tools/jwt-decoder" element={<JwtDecoderPage />} />
+              <Route path="/components" element={<ComponentsPage />} />
+              <Route path="/components/buttons" element={<ButtonsPage />} />
             </Routes>
           </div>
           <CuteCat />
